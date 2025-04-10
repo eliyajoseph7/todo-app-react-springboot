@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GuestLayout from "./layout/guest";
 import api from "../../api/services";
+import { toast } from "react-toastify";
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,25 +12,49 @@ export default function Login() {
   const navigate = useNavigate();
 
   const headers = {
+    "Accept": "application/json",
     "Content-Type": "application/json",
   };
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
+    toast.loading("Logging in...", { position: "bottom-center" });
     try {
-      const data = axios.post(api.post("/auth/login"), {
-        email,
-        password,
+      var body = {
+        usernameOrEmail: email,
+        password: password,
+      }
+      // console.log(api);
+      // console.log(body);
+      const data = await api.post("/auth/login", body, {
       }, {
         headers: headers,
       });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token_expiry", data.token_expiry);
+      
+      var response = data.data;
+      toast.dismiss();
+      if (response.status === 200) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("token_expiry", response.token_expiry);
 
-      navigate("/dashboard");
+        // console.log(response.token);
+        
+        toast.success(response.message);
+        navigate("/dashboard");
+      } else if (response.status === 401 || response.status === 403) {        
+        toast.error("Login failed, please check your credentials");
+      } else {
+        toast.error("Login failed");        
+      }
     } catch (error) {
-      console.error("Error logging in:", error);
+      toast.dismiss();
+      if (error.response.status === 401 || error.response.status === 403) {        
+        toast.error("Login failed, please check your credentials");
+      } else {
+        toast.error("Login failed");
+      }
+      console.log("Error logging in:", error);
     }
   }
 
@@ -74,7 +100,7 @@ export default function Login() {
               />
             </div>
             <div>
-              <button 
+              <button
                 className="w-full rounded-md bg-purple-600 px-4 py-2 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 cursor-pointer"
               >
                 Login

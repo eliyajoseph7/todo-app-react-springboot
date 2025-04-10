@@ -19,9 +19,7 @@ export default function AuthGuard({ children }: { children: JSX.Element }) {
 
     if (currentTime >= expiryTime) {
       // Token is expired
-      localStorage.removeItem("token");
-      localStorage.removeItem("token_expiry");
-      localStorage.removeItem("user");
+      localStorage.clear();
       setIsAuthenticated(false);
     } else {
       setIsAuthenticated(true);

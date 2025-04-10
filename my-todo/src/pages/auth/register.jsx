@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GuestLayout from "./layout/guest";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/services";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -10,13 +11,15 @@ export default function Register() {
   const navigate = useNavigate();
 
   const headers = {
+    "Accept": "application/json",
     "Content-Type": "application/json",
   };
 
-  function handleRegister(e) {
+  async function handleRegister(e) {
     e.preventDefault();
+    toast.loading('Registering...', { position: "bottom-center" })
     try {
-      const data = axios.post(API_URL + "/auth/register", {
+      const data = await api.post( "/auth/register", {
         email,
         password,
         full_name,
@@ -24,12 +27,22 @@ export default function Register() {
       }, {
         headers: headers,
       });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token_expiry", data.token_expiry);
 
-      navigate("/dashboard");
+      var response = data.data;
+      toast.dismiss();
+      if (response.status === 200) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("token_expiry", response.token_expiry);
+
+        toast.success(response.message);
+        navigate("/dashboard");
+      } else {
+        toast.error(response.message);
+      }
     } catch (error) {
+      toast.dismiss();
+      toast.error("Error registering");
       console.error("Error registering:", error);
     }
   }

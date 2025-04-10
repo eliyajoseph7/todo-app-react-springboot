@@ -40,9 +40,9 @@ const Sidebar = ({ children }) => {
   var currentUrl = window.location.pathname;
   var currentPath = currentUrl.split("/").pop();
   var currentItem = navItems.find((item) => item.url === currentUrl);
-  console.log("currentItem", currentItem);
-  console.log("currentPath", currentPath);
-  console.log("currentUrl", currentUrl);
+  // console.log("currentItem", currentItem);
+  // console.log("currentPath", currentPath);
+  // console.log("currentUrl", currentUrl);
 
   //   if (currentItem) {
   //     setActiveItem(currentItem.name);
@@ -68,7 +68,7 @@ const Sidebar = ({ children }) => {
         {/* Collapse button */}
         <button
           onClick={toggleSidebar}
-          className={`p-2 rounded-full ${
+          className={`p-2 rounded-full cursor-pointer ${
             darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
           } mb-6 flex items-center justify-between`}
         >
@@ -161,17 +161,10 @@ const Sidebar = ({ children }) => {
         </div>
       </div>
       <div className="w-full">
-        <Navbar />
+        <Navbar collapsed={collapsed} toggleSidebar={toggleSidebar} />
         {/* Main content area */}
         <div className="flex-1 p-8">
-          <button
-            className={`p-2 rounded-md dark-remove:bg-red-500 ${
-              darkMode ? "bg-gray-700 text-white" : "bg-gray-200"
-            }`}
-            onClick={toggleSidebar}
-          >
-            {collapsed ? "Expand" : "Collapse"} Sidebar
-          </button>
+          
           {/* Main content */}
           {children}
         </div>

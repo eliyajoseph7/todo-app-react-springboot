@@ -8,6 +8,8 @@ import Register from "./pages/auth/register";
 import Dashboard from "./pages/admin/dashboard";
 import TodosList from "./pages/admin/todos/list";
 import AuthGuard from "./guards/auth_guard";
+import { ToastContainer } from "react-toastify";
+import CompletedTodos from "./pages/admin/todos/completed";
 
 function App() {
   useEffect(() => {
@@ -17,11 +19,13 @@ function App() {
   }, []);
 
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />,
-      <Route path="/login" element={<Login />} />,
-      <Route path="/register" element={<Register />} />
-      <Route
+    <>
+      <ToastContainer />
+      <Routes>
+        <Route path="/" element={<Login />} />,
+        <Route path="/login" element={<Login />} />,
+        <Route path="/register" element={<Register />} />
+        <Route
         path="/dashboard"
         element={
           <AuthGuard>
@@ -37,7 +41,16 @@ function App() {
           </AuthGuard>
         }
       />
+      <Route
+        path="/todos/completed"
+        element={
+          <AuthGuard>
+            <CompletedTodos />
+          </AuthGuard>
+        }
+      />
     </Routes>
+    </>
   );
 }
 
